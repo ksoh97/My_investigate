@@ -128,8 +128,7 @@ class SonoNet:
         gap = layers.global_avgpool(rank=3, name="GAP")(enc_conv6_2)
         self.cls_out = layers.softmax(gap, name="softmax")
 
-        self.cls_model = keras.Model({"cls_in": self.enc_in_layer}, {"cls_out": self.cls_out, "m1":map1, "m2":map2,
-                                                                     "m3":map3, "m4":map4, "m5":map5}, name="cls_model")
+        self.cls_model = keras.Model(self.enc_in_layer, self.cls_out, name="cls_model")
         return self.cls_model
 
 
