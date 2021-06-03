@@ -14,6 +14,8 @@ import tensorflow as tf
 long_path = "/DataCommon/ksoh/longitudinal/3class"
 long_nc, long_ad = np.load(long_path + "/resized_quan_NC.npy"), np.load(long_path + "/resized_quan_AD.npy")
 long_nc, long_ad = np.expand_dims(long_nc, axis=-1), np.expand_dims(long_ad, axis=-1)
+long_mci = np.load(long_path + "/resized_quan_MCI.npy")
+long_mci = np.expand_dims(long_mci, axis=-1)
 
 class SonoNet():
     def __init__(self, ch=16):
