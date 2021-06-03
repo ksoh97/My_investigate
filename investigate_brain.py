@@ -93,9 +93,34 @@ def get_model():
     #     pickle.dump(weight_dict, f)
     # raise Exception
 
-    with open("/home/jsyoon/ks_innvestigate/brain_model_weights.pkl", "rb") as f:
-        weight_dict = pickle.load(f)
+    # AD vs. NC classifier's model
+    # with open("/home/jsyoon/ks_innvestigate/AD_NC_brain_model_weights.pkl", "rb") as f: weight_dict = pickle.load(f)
+    # new_weight_dict = {}
+    # for fff in weight_dict:
+    #     old_f = fff
+    #     if fff[0] == "b":
+    #         if fff.startswith("batch_normalization/"):
+    #             fff = fff.replace("batch_normalization/", "batch_normalization_1/")
+    #         else:
+    #             fff = "batch_normalization_%d/%s" % (
+    #                 int(fff.split("_")[2].split("/")[0]) - 55, fff.split("/")[-1])
+    #     elif fff[0] == "d":
+    #         if fff.startswith("dense/"):
+    #             fff = fff.replace("dense/", "dense_1/")
+    #         else:
+    #             fff = "dense_%d/%s" % (int(fff.split("_")[1].split("/")[0]), fff.split("/")[-1])
+    #
+    #     if os.environ["GOOOOG"] == "0":
+    #         new_weight_dict[old_f] = weight_dict[old_f]
+    #     else:
+    #         new_weight_dict[fff] = weight_dict[old_f]
+    #
+    # for l in model.layers:
+    #     for old_w in l.weights:
+    #         keras.backend.set_value(old_w, new_weight_dict[old_w.name])
 
+    # MCI vs. AD classifier's model
+    with open("/home/jsyoon/ks_innvestigate/MCI_AD_brain_model_weights.pkl", "rb") as f: weight_dict = pickle.load(f)
     new_weight_dict = {}
     for fff in weight_dict:
         old_f = fff
@@ -104,7 +129,7 @@ def get_model():
                 fff = fff.replace("batch_normalization/", "batch_normalization_1/")
             else:
                 fff = "batch_normalization_%d/%s" % (
-                    int(fff.split("_")[2].split("/")[0]) - 55, fff.split("/")[-1])
+                    int(fff.split("_")[2].split("/")[0]) - 12, fff.split("/")[-1])
         elif fff[0] == "d":
             if fff.startswith("dense/"):
                 fff = fff.replace("dense/", "dense_1/")
@@ -119,8 +144,34 @@ def get_model():
     for l in model.layers:
         for old_w in l.weights:
             keras.backend.set_value(old_w, new_weight_dict[old_w.name])
-    return model
 
+    # MCI vs. NC classifier's model
+    # with open("/home/jsyoon/ks_innvestigate/NC_MCI_brain_model_weights.pkl", "rb") as f: weight_dict = pickle.load(f)
+    # new_weight_dict = {}
+    # for fff in weight_dict:
+    #     old_f = fff
+    #     if fff[0] == "b":
+    #         if fff.startswith("batch_normalization/"):
+    #             fff = fff.replace("batch_normalization/", "batch_normalization_1/")
+    #         else:
+    #             fff = "batch_normalization_%d/%s" % (
+    #                 int(fff.split("_")[2].split("/")[0]) - 53, fff.split("/")[-1])
+    #     elif fff[0] == "d":
+    #         if fff.startswith("dense_3/"):
+    #             fff = fff.replace("dense_3/", "dense_1/")
+    #         else:
+    #             fff = "dense_%d/%s" % (int(fff.split("_")[1].split("/")[0]), fff.split("/")[-1])
+    #
+    #     if os.environ["GOOOOG"] == "0":
+    #         new_weight_dict[old_f] = weight_dict[old_f]
+    #     else:
+    #         new_weight_dict[fff] = weight_dict[old_f]
+    #
+    # for l in model.layers:
+    #     for old_w in l.weights:
+    #         keras.backend.set_value(old_w, new_weight_dict[old_w.name])
+
+    return model
 
 
 if os.environ["GOOOOG"] == "0":
@@ -159,18 +210,25 @@ else:
     ]
 
     all_res_AD = np.zeros(shape=(3, len(long_ad), 96, 114, 96, 1), dtype=np.float32)
-    all_res_NC = np.zeros(shape=(3, len(long_nc), 96, 114, 96, 1), dtype=np.float32)
+    all_res_MCI = np.zeros(shape=(3, len(long_mci), 96, 114, 96, 1), dtype=np.float32)
+    # all_res_NC = np.zeros(shape=(3, len(long_nc), 96, 114, 96, 1), dtype=np.float32)
 
     for cnt1, method in enumerate(methods):
         ad_analyzer = innvestigate.create_analyzer(method[0], model, **method[1])
-        nc_analyzer = innvestigate.create_analyzer(method[0], model, **method[1])
+        mci_analyzer = innvestigate.create_analyzer(method[0], model, **method[1])
+        # nc_analyzer = innvestigate.create_analyzer(method[0], model, **method[1])
         all_res_AD[cnt1] = ad_analyzer.analyze(long_ad)
-        all_res_NC[cnt1] = nc_analyzer.analyze(long_nc)
+        all_res_MCI[cnt1] = mci_analyzer.analyze(long_mci)
+        # all_res_NC[cnt1] = nc_analyzer.analyze(long_nc)
 
     np.save("/home/jsyoon/ks_innvestigate/brain/lrp_AD.npy", all_res_AD[0])
     np.save("/home/jsyoon/ks_innvestigate/brain/deeptaylor2_AD.npy", all_res_AD[1])
     np.save("/home/jsyoon/ks_innvestigate/brain/guided_AD.npy", all_res_AD[2])
 
-    np.save("/home/jsyoon/ks_innvestigate/brain/lrp_NC.npy", all_res_NC[0])
-    np.save("/home/jsyoon/ks_innvestigate/brain/deeptaylor2_NC.npy", all_res_NC[1])
-    np.save("/home/jsyoon/ks_innvestigate/brain/guided_NC.npy", all_res_NC[2])
+    np.save("/home/jsyoon/ks_innvestigate/brain/lrp_MCI.npy", all_res_MCI[0])
+    np.save("/home/jsyoon/ks_innvestigate/brain/deeptaylor2_MCI.npy", all_res_MCI[1])
+    np.save("/home/jsyoon/ks_innvestigate/brain/guided_MCI.npy", all_res_MCI[2])
+
+    # np.save("/home/jsyoon/ks_innvestigate/brain/lrp_NC.npy", all_res_NC[0])
+    # np.save("/home/jsyoon/ks_innvestigate/brain/deeptaylor2_NC.npy", all_res_NC[1])
+    # np.save("/home/jsyoon/ks_innvestigate/brain/guided_NC.npy", all_res_NC[2])
