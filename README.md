@@ -1,4 +1,4 @@
-# My_investigate
+# My iNNvestigate
 
 iNNvestigate can be installed with the following commands.
 The library is based on Keras and therefore requires a supported [Keras-backend](https://keras.io/backend/)
